@@ -9,4 +9,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Engine {
     private int pedSIze;
+
+    @Override
+    public String toString() {
+        return "Engine{" + "size=" + pedSIze + '}';
+    }
 }
