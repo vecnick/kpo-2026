@@ -1,5 +1,6 @@
 package studying;
 
+
 public class Customer {
 
     // ФИО покупателя
@@ -8,6 +9,8 @@ public class Customer {
     // Автомобиль, который достался покупателю.
     // Customer просто хранит ссылку на Car. Не final, потому что изначально машины нет (null), а потом она может появиться
     // Это агрегация: Customer не создаёт машину сам, он просто получает её потом, когда её ему передадут
+
+
     private Car car;
 
     public Customer(String fullName) {
@@ -40,3 +43,4 @@ public class Customer {
         return fullName + " ==> " + (hasCar() ? car.toString() : "ещё ждёт свою машину");
     }
 }
+
