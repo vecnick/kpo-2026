@@ -1,8 +1,10 @@
 package studying;
 
+import java.util.ArrayList;
+
 public class Main {
     public static void main(String[] args) {
-        var factory = new FactoryAF();
+        var factory = new HseCarFactory(new ArrayList<>());
 
         factory.addCar(1);
         factory.addCar(2);
