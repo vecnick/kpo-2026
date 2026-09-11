@@ -1,19 +1,21 @@
 package studying;
 
 public class Engine {
-    private final int size;
-    public static final String TYPE = "ELECTRIC";
 
-    public Engine(int size) {
-        this.size = size;
+    // final - значит, что после того как двигатель создали, поменять размер педалей уже нельзя
+    private final int pedalSize;
+
+
+    // Конструктор - здесь мы говорим, какой размер педалей будет у этого конкретного двигателя, когда он создаётся
+    public Engine(int pedalSize) {
+        this.pedalSize = pedalSize;
     }
 
-    public int getSize() {
-        return size;
-    }
 
+    // Этот метод просто говорит, как двигатель будет выглядеть, если его напечатать (System.out.println)
+    // Без него бы выводилась как-то каша вместо нормального текста
     @Override
     public String toString() {
-        return "Engine{" + "size=" + size + '}';
+        return "Двигатель (размер педалей: "+ pedalSize + ")";
     }
 }
