@@ -7,29 +7,41 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 
 /**
- * Intentionally monolithic report service used to demonstrate an implementation without SOLID.
- * It generates, persists, and sends a report by itself.
+ * Намеренно монолитный сервис, который формирует, сохраняет и отправляет
+ * отчёт самостоятельно и тем самым нарушает принцип единственной ответственности.
  */
-public class ReportService {
+public final class ReportService {
     /**
-     * Creates a text report about sales at the current moment.
+     * Создаёт монолитный сервис работы с отчётами.
+     */
+    public ReportService() {
+    }
+
+    /**
+     * Формирует текстовый отчёт о продажах на текущие дату и время.
      *
-     * @return generated report text
+     * @return сформированный текст отчёта
      */
     public String generateReport() {
         var now = LocalDateTime.now();
 
-        return "Отчёт%nДата: %tF%nВремя: %tT%n--------------------------------%n"
-                .formatted(now, now)
-                + "Продано автомобилей: 100 шт.%nПродано мотоциклов: 50 шт.%n--------------------------------%n";
+        return """
+                Отчёт
+                Дата: %tF
+                Время: %tT
+                --------------------------------
+                Продано автомобилей: 100 шт.
+                Продано мотоциклов: 50 шт.
+                --------------------------------
+                """.formatted(now, now);
     }
 
     /**
-     * Writes report text to the selected file.
+     * Записывает текст отчёта в указанный файл.
      *
-     * @param report report text to save
-     * @param fileName destination file name
-     * @throws UncheckedIOException when the file cannot be written
+     * @param report текст сохраняемого отчёта
+     * @param fileName имя файла назначения
+     * @throws UncheckedIOException если файл не удалось записать
      */
     public void saveReport(String report, String fileName) {
         try {
@@ -40,10 +52,10 @@ public class ReportService {
     }
 
     /**
-     * Imitates sending a report to an email recipient.
+     * Имитирует отправку отчёта получателю по электронной почте.
      *
-     * @param report report text to send
-     * @param email recipient email address
+     * @param report текст отправляемого отчёта
+     * @param email адрес получателя
      */
     public void sendReport(String report, String email) {
         System.out.printf("Отправка отчёта %s на email: %s%n", report, email);

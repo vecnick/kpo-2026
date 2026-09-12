@@ -1,11 +1,18 @@
 package studying.withoutsolid;
 
-/** Demonstrates the monolithic implementation without SOLID. */
-public class Main {
+/**
+ * Демонстрирует монолитную реализацию сервиса без применения принципов SOLID.
+ */
+public final class Main {
+    private Main() {
+    }
+
     /**
-     * Generates, saves, and sends one report.
+     * Формирует, сохраняет и отправляет один отчёт через монолитный сервис.
+     *
+     * @param args аргументы командной строки; в демонстрации не используются
      */
-    static void main() {
+    public static void main(String[] args) {
         var reportService = new ReportService();
         var report = reportService.generateReport();
 

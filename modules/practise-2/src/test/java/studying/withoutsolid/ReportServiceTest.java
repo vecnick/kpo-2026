@@ -10,6 +10,9 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Проверяет базовую работу намеренно монолитного сервиса без SOLID.
+ */
 class ReportServiceTest {
     @TempDir
     Path temporaryDirectory;
