@@ -2,16 +2,21 @@ package studying.withsolid;
 
 import studying.withsolid.model.Report;
 import studying.withsolid.service.ReportService;
+import studying.withsolid.service.impl.CompositeReportSaver;
 import studying.withsolid.service.impl.EmailReportSender;
+import studying.withsolid.service.impl.JsonReportSaver;
 import studying.withsolid.service.impl.TextReportSaver;
+import studying.withsolid.service.impl.XmlReportSaver;
 
 import java.time.LocalDateTime;
 
 public class Main {
     /**
      * Runs the report creation, persistence, and delivery demonstration.
+     *
+     * @param args command-line arguments
      */
-    static void main() {
+    public static void main(String[] args) {
         var now = LocalDateTime.now();
         var report = Report.builder()
                 .title("Отчёт")
@@ -22,7 +27,11 @@ public class Main {
                 .build();
 
         var reportService = new ReportService(
-                new TextReportSaver(),
+                new CompositeReportSaver(
+                        new TextReportSaver(),
+                        new JsonReportSaver(),
+                        new XmlReportSaver()
+                ),
                 new EmailReportSender()
         );
 
