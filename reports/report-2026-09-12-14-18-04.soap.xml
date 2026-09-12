@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:report="urn:hse:reports">
+  <soap:Header/>
+  <soap:Body>
+    <report:SalesReport>
+      <report:title>Отчёт</report:title>
+      <report:date>2026-09-12</report:date>
+      <report:time>14:18:04.343015</report:time>
+      <report:carsSold>100</report:carsSold>
+      <report:motorcyclesSold>50</report:motorcyclesSold>
+    </report:SalesReport>
+  </soap:Body>
+</soap:Envelope>
