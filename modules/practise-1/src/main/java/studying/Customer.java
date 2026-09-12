@@ -1,19 +1,20 @@
 package studying;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+@Getter
+@Setter
+@AllArgsConstructor
 @ToString
 public class Customer {
-    @Getter
-    private final String fullName;
-
-    @Getter
-    @Setter
     private Car car;
 
-    public Customer(String fullName) {
-        this.fullName = fullName;
+    private String FIO;
+
+    public Customer (String FIO) {
+        this.FIO = FIO;
     }
 }

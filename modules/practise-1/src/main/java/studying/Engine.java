@@ -1,19 +1,17 @@
 package studying;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
 public class Engine {
-    private final int size;
-    public static final String TYPE = "ELECTRIC";
-
-    public Engine(int size) {
-        this.size = size;
-    }
-
-    public int getSize() {
-        return size;
-    }
+    private int pedSIze;
 
     @Override
     public String toString() {
-        return "Engine{" + "size=" + size + '}';
+        return "Engine{" + "size=" + pedSIze + '}';
     }
 }
