@@ -4,8 +4,10 @@ package studying.withoutsolid;
 public class Main {
     /**
      * Generates, saves, and sends one report.
+     *
+     * @param args command-line arguments
      */
-    static void main() {
+    public static void main(String[] args) {
         var reportService = new ReportService();
         var report = reportService.generateReport();
 

@@ -2,10 +2,12 @@ package studying.service.impl;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import studying.withsolid.exception.ApplicationErrorCode;
 import studying.withsolid.exception.ApplicationException;
 import studying.withsolid.model.Report;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -13,22 +15,22 @@ import java.time.LocalTime;
 import studying.withsolid.service.impl.TextReportSaver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TextReportSaverTest {
+    @TempDir
+    Path temporaryDirectory;
+
     @Test
     @DisplayName("Сохраняет текстовое представление отчёта в динамически сформированный файл")
     void saveWritesReportToFile() throws Exception {
         var report = createReport();
-        var file = Path.of("reports", "report-2026-09-11-12-00-00.txt");
+        var file = temporaryDirectory.resolve("report-2026-09-11-12-00-00.txt");
 
-        try {
-            new TextReportSaver().save(report);
+        new TextReportSaver(temporaryDirectory).save(report);
 
-            assertEquals(report.toString(), Files.readString(file));
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        assertEquals(report.toString(), Files.readString(file));
     }
 
     @Test
@@ -38,6 +40,19 @@ class TextReportSaverTest {
                 () -> new TextReportSaver().save(null));
 
         assertEquals(ApplicationErrorCode.VALIDATION_ERROR, exception.getCode());
+    }
+
+    @Test
+    @DisplayName("Сохраняет код и причину прикладной ошибки при сбое записи")
+    void savePreservesFileWriteErrorCause() throws Exception {
+        var pathThatIsNotDirectory = temporaryDirectory.resolve("file");
+        Files.writeString(pathThatIsNotDirectory, "content");
+
+        var exception = assertThrows(ApplicationException.class,
+                () -> new TextReportSaver(pathThatIsNotDirectory).save(createReport()));
+
+        assertEquals(ApplicationErrorCode.FILE_WRITE_ERROR, exception.getCode());
+        assertInstanceOf(IOException.class, exception.getCause());
     }
 
     private Report createReport() {
