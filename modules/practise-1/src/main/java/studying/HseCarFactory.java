@@ -1,39 +1,41 @@
 package studying;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
-@ToString
-@RequiredArgsConstructor
 public class HseCarFactory {
-    private int carNumber = 0;
-    private final List<Car> cars = new ArrayList<>();
-    private final List<Customer> customers = new ArrayList<>();
+    private List<Car> cars = new ArrayList<>();
+    private List<Customer> customers = new ArrayList<>();
 
-    public void addCustomer(Customer customer) {
-        customers.add(customer);
+    public boolean addCar(int pedSize) {
+        return cars.add(new Car(pedSize));
     }
 
-    public void addCar(int engineSize) {
-        cars.add(new Car(carNumber++, engineSize));
+    public boolean addCustomer(Customer customer) {
+        return customers.add(customer);
     }
 
-    /**
-     * Assigns available cars to waiting customers and liquidates unsold stock.
-     */
+    public boolean removeCustomer(Customer customer) {
+        return customers.remove(customer);
+    }
+
     public void saleCar() {
-        customers.stream()
-                .filter(customer -> Objects.isNull(customer.getCar()))
-                .forEach(customer -> {
-                    if (!cars.isEmpty()) {
-                        customer.setCar(cars.removeFirst());
-                    }
-                });
-        cars.clear();
+        Iterator<Car> carIterator = cars.iterator();
+
+        for (Customer customer : customers) {
+            if (customer.getCar() == null && carIterator.hasNext()) {
+                customer.setCar(carIterator.next());
+                carIterator.remove();
+            }
+        }
+
+        boolean allCustomersHaveCars = customers.stream()
+                .allMatch(customer -> customer.getCar() != null);
+
+        if (allCustomersHaveCars) {
+            cars.clear();
+        }
     }
 
     public void printCars() {

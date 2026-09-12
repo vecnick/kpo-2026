@@ -1,17 +1,20 @@
 package studying;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
+@Getter
+@Setter
 @ToString
 public class Car {
-    private final Engine engine;
+    private static int nextVin = 1;
 
-    @Getter
-    private final int VIN;
+    private Engine engine;
+    private int vin;
 
-    public Car(int VIN, int engineSize) {
-        this.VIN = VIN;
-        engine = new Engine(engineSize);
+    public Car(int pedSize) {
+        this.engine = new Engine(pedSize);
+        this.vin = nextVin++;
     }
 }
