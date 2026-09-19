@@ -19,8 +19,8 @@ class ReportServiceTest {
     @DisplayName("Обрабатывает отчёт: сначала сохраняет, затем отправляет")
     void processSavesAndThenSendsTheSameReport() {
         var calls = new ArrayList<String>();
-        ReportSaver saver = report -> calls.add("save:" + report.title());
-        ReportSender sender = (report, email) -> calls.add("send:" + report.title() + ":" + email);
+        ReportSaver saver = report -> calls.add("save:" + report.getTitle());
+        ReportSender sender = (report, email) -> calls.add("send:" + report.getTitle() + ":" + email);
         var report = createReport();
 
         new ReportService(saver, sender).process(report, "student@hse.ru");
