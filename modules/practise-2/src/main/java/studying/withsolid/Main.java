@@ -1,11 +1,11 @@
 package studying.withsolid;
 
 import studying.withsolid.model.Report;
-import studying.withsolid.service.ReportService;
-import studying.withsolid.service.impl.EmailReportSender;
-import studying.withsolid.service.impl.TextReportSaver;
 
 import java.time.LocalDateTime;
+import studying.withsolid.service.ReportServiceFacade;
+import studying.withsolid.service.impl.ReportSaverImpl;
+import studying.withsolid.service.impl.ReportSenderImpl;
 
 public class Main {
     /**
@@ -21,9 +21,9 @@ public class Main {
                 .motorcyclesSold(50)
                 .build();
 
-        var reportService = new ReportService(
-                new TextReportSaver(),
-                new EmailReportSender()
+        var reportService = new ReportServiceFacade(
+                new ReportSenderImpl(),
+                new ReportSaverImpl()
         );
 
         reportService.process(report, "example@example.com");

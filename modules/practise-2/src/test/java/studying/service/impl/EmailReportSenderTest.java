@@ -11,7 +11,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import studying.withsolid.service.impl.EmailReportSender;
+import studying.withsolid.service.impl.ReportSenderImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,7 +27,7 @@ class EmailReportSenderTest {
 
         try (var interceptedOutput = new PrintStream(output, true, StandardCharsets.UTF_8)) {
             System.setOut(interceptedOutput);
-            new EmailReportSender().send(report, "student@hse.ru");
+            new ReportSenderImpl().send(report, "student@hse.ru");
         } finally {
             System.setOut(originalOutput);
         }
@@ -41,7 +41,7 @@ class EmailReportSenderTest {
     @DisplayName("Выбрасывает прикладную ошибку, если email получателя не задан")
     void sendRejectsMissingEmail() {
         var exception = assertThrows(ApplicationException.class,
-                () -> new EmailReportSender().send(createReport(), null));
+                () -> new ReportSenderImpl().send(createReport(), null));
 
         assertEquals(ApplicationErrorCode.VALIDATION_ERROR, exception.getCode());
     }

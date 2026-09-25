@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import studying.withsolid.service.ReportSaver;
 import studying.withsolid.service.ReportSender;
-import studying.withsolid.service.ReportService;
+import studying.withsolid.service.ReportServiceFacade;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,7 +23,7 @@ class ReportServiceTest {
         ReportSender sender = (report, email) -> calls.add("send:" + report.title() + ":" + email);
         var report = createReport();
 
-        new ReportService(saver, sender).process(report, "student@hse.ru");
+        new ReportServiceFacade(sender, saver).process(report, "student@hse.ru");
 
         assertEquals(List.of("save:Продажи", "send:Продажи:student@hse.ru"), calls);
     }

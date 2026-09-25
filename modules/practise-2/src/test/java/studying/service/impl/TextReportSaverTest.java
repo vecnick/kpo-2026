@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import studying.withsolid.service.impl.TextReportSaver;
+import studying.withsolid.service.impl.ReportSaverImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,7 +23,7 @@ class TextReportSaverTest {
         var file = Path.of("reports", "report-2026-09-11-12-00-00.txt");
 
         try {
-            new TextReportSaver().save(report);
+            new ReportSaverImpl().save(report);
 
             assertEquals(report.toString(), Files.readString(file));
         } finally {
@@ -35,7 +35,7 @@ class TextReportSaverTest {
     @DisplayName("Выбрасывает прикладную ошибку, если отчёт не задан")
     void saveRejectsMissingReport() {
         var exception = assertThrows(ApplicationException.class,
-                () -> new TextReportSaver().save(null));
+                () -> new ReportSaverImpl().save(null));
 
         assertEquals(ApplicationErrorCode.VALIDATION_ERROR, exception.getCode());
     }
