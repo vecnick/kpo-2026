@@ -12,7 +12,11 @@ import studying.withsolid.service.ReportSaver;
 import studying.withsolid.service.ReportSender;
 import studying.withsolid.service.ReportService;
 
+import studying.withsolid.exception.ApplicationErrorCode;
+import studying.withsolid.exception.ApplicationException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ReportServiceTest {
     @Test
@@ -26,6 +30,18 @@ class ReportServiceTest {
         new ReportService(saver, sender).process(report, "student@hse.ru");
 
         assertEquals(List.of("save:Продажи", "send:Продажи:student@hse.ru"), calls);
+    }
+
+    @Test
+    @DisplayName("Выбрасывает прикладную ошибку, если отчёт не задан")
+    void processRejectsMissingReport() {
+        ReportSaver saver = report -> { };
+        ReportSender sender = (report, email) -> { };
+
+        var exception = assertThrows(ApplicationException.class,
+                () -> new ReportService(saver, sender).process(null, "student@hse.ru"));
+
+        assertEquals(ApplicationErrorCode.VALIDATION_ERROR, exception.getCode());
     }
 
     private Report createReport() {

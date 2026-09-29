@@ -6,6 +6,7 @@ import studying.withsolid.exception.ApplicationErrorCode;
 import studying.withsolid.exception.ApplicationException;
 import studying.withsolid.model.Report;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 import studying.withsolid.service.impl.TextReportSaver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TextReportSaverTest {
@@ -38,6 +40,24 @@ class TextReportSaverTest {
                 () -> new TextReportSaver().save(null));
 
         assertEquals(ApplicationErrorCode.VALIDATION_ERROR, exception.getCode());
+    }
+
+    @Test
+    @DisplayName("Оборачивает ошибку записи файла в прикладное исключение с причиной")
+    void saveWrapsFileWriteFailure() throws Exception {
+        var blockedPath = Path.of("reports", "not-a-directory.txt");
+        Files.createDirectories(blockedPath.getParent());
+        Files.writeString(blockedPath, "not a directory");
+
+        try {
+            var exception = assertThrows(ApplicationException.class,
+                    () -> new TextReportSaver(blockedPath).save(createReport()));
+
+            assertEquals(ApplicationErrorCode.FILE_WRITE_ERROR, exception.getCode());
+            assertInstanceOf(IOException.class, exception.getCause());
+        } finally {
+            Files.deleteIfExists(blockedPath);
+        }
     }
 
     private Report createReport() {
