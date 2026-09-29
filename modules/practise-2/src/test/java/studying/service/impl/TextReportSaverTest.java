@@ -2,6 +2,7 @@ package studying.service.impl;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import studying.withsolid.exception.ApplicationErrorCode;
 import studying.withsolid.exception.ApplicationException;
 import studying.withsolid.model.Report;
@@ -14,22 +15,21 @@ import studying.withsolid.service.impl.ReportSaverImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TextReportSaverTest {
+    @TempDir
+    Path tempDir;
+
     @Test
     @DisplayName("Сохраняет текстовое представление отчёта в динамически сформированный файл")
     void saveWritesReportToFile() throws Exception {
         var report = createReport();
-        var file = Path.of("reports", "report-2026-09-11-12-00-00.txt");
+        var file = tempDir.resolve("report-2026-09-11-12-00-00.txt");
 
-        try {
-            when(ReportSaverImpl.save()).then()
-            new ReportSaverImpl().save(report);
+        new ReportSaverImpl(tempDir).save(report);
 
-            assertEquals(report.toString(), Files.readString(file));
-        } finally {
-            Files.deleteIfExists(file);
-        }
+        assertEquals(report.toString(), Files.readString(file));
     }
 
     @Test
@@ -41,13 +41,21 @@ class TextReportSaverTest {
         assertEquals(ApplicationErrorCode.VALIDATION_ERROR, exception.getCode());
     }
 
+    @Test
+    @DisplayName("Сохраняет исходную причину ошибки записи")
+    void saveKeepsWriteFailureCause() throws Exception {
+        var fileInsteadOfDirectory = tempDir.resolve("file");
+        Files.writeString(fileInsteadOfDirectory, "data");
+
+        var exception = assertThrows(ApplicationException.class,
+                () -> new ReportSaverImpl(fileInsteadOfDirectory).save(createReport()));
+
+        assertEquals(ApplicationErrorCode.FILE_WRITE_ERROR, exception.getCode());
+        assertTrue(exception.getCause() instanceof java.io.IOException);
+    }
+
     private Report createReport() {
-        return Report.builder()
-                .title("Продажи")
-                .date(LocalDate.of(2026, 9, 11))
-                .time(LocalTime.NOON)
-                .carsSold(100)
-                .motorcyclesSold(50)
-                .build();
+        return new Report("Продажи", LocalDate.of(2026, 9, 11),
+                LocalTime.NOON, 100, 50);
     }
 }

@@ -8,7 +8,7 @@ import studying.withsolid.service.ReportSender;
 public class ReportSenderImpl implements ReportSender {
     @Override
     public void send(Report report, String email){
-        if (report == null || email == null) {
+        if (report == null || email == null || email.isBlank()) {
             throw new ApplicationException(
                     ApplicationErrorCode.VALIDATION_ERROR,
                     String.format("Отчет или email: \"%s\" не может быть null.", email)

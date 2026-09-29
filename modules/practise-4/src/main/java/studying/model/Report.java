@@ -2,19 +2,9 @@ package studying.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import lombok.Builder;
 import studying.exception.ApplicationErrorCode;
 import studying.exception.ApplicationException;
 
-/**
- * Immutable data that describes one sales report.
- * @param title report title
- * @param date report date
- * @param time report time
- * @param carsSold number of cars sold
- * @param motorcyclesSold number of motorcycles sold
- */
-@Builder
 public record Report(
         String title,
         LocalDate date,
@@ -22,14 +12,11 @@ public record Report(
         int carsSold,
         int motorcyclesSold
 ) {
-    /**
-     * Validates the report data before it is made available to services.
-     */
     public Report {
-        if (title == null || title.isBlank()) {
+        if (title == null || title.isBlank() || date == null || time == null) {
             throw new ApplicationException(
                     ApplicationErrorCode.VALIDATION_ERROR,
-                    "Заголовок отчёта обязателен");
+                    "Название, дата и время отчёта обязательны");
         }
         if (carsSold < 0 || motorcyclesSold < 0) {
             throw new ApplicationException(
@@ -39,11 +26,6 @@ public record Report(
         }
     }
 
-    /**
-     * Produces the text-file representation of this report.
-     *
-     * @return formatted report content
-     */
     @Override
     public String toString() {
         return "%s%nДата: %s%nВремя: %s%n--------------------------------%n"

@@ -9,19 +9,11 @@ import studying.exception.ApplicationException;
 import studying.model.Report;
 import studying.service.ReportSaver;
 
-/** Saves reports as text files. */
 public final class ReportSaverImpl implements ReportSaver {
-    /** Formats report times for file names. */
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HH-mm-ss");
-    /** Directory used for saved reports. */
     private final Path reportsDirectory;
 
-    /**
-     * Creates a saver that writes reports into the supplied directory.
-     *
-     * @param targetDirectory target directory
-     */
     public ReportSaverImpl(final Path targetDirectory) {
         this.reportsDirectory = targetDirectory;
     }

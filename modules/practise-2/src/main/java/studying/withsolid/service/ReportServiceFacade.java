@@ -1,12 +1,15 @@
 package studying.withsolid.service;
 
-import lombok.RequiredArgsConstructor;
 import studying.withsolid.model.Report;
 
-@RequiredArgsConstructor
 public class ReportServiceFacade {
     private final ReportSender reportSender;
     private final ReportSaver reportSaver;
+
+    public ReportServiceFacade(ReportSender reportSender, ReportSaver reportSaver) {
+        this.reportSender = reportSender;
+        this.reportSaver = reportSaver;
+    }
 
     public void process(Report report, String email) {
         reportSaver.save(report);

@@ -8,18 +8,10 @@ import studying.withsolid.service.impl.ReportSaverImpl;
 import studying.withsolid.service.impl.ReportSenderImpl;
 
 public class Main {
-    /**
-     * Runs the report creation, persistence, and delivery demonstration.
-     */
     static void main() {
         var now = LocalDateTime.now();
-        var report = Report.builder()
-                .title("Отчёт")
-                .date(now.toLocalDate())
-                .time(now.toLocalTime())
-                .carsSold(100)
-                .motorcyclesSold(50)
-                .build();
+        var report = new Report("Отчёт", now.toLocalDate(),
+                now.toLocalTime(), 100, 50);
 
         var reportService = new ReportServiceFacade(
                 new ReportSenderImpl(),

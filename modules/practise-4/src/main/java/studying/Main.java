@@ -9,18 +9,11 @@ import studying.model.Report;
 
 @SpringBootApplication
 public final class Main {
-    /** Number of cars in the demonstration report. */
     private static final int DEMO_CARS_SOLD = 100;
-    /** Number of motorcycles in the demonstration report. */
     private static final int DEMO_MOTORCYCLES_SOLD = 50;
 
     private Main() { }
 
-    /**
-     * Runs the dependency-injection example.
-     *
-     * @param args command-line arguments
-     */
     public static void main(final String[] args) {
         var context = SpringApplication.run(Main.class);
         var service = context.getBean(ReportService.class);

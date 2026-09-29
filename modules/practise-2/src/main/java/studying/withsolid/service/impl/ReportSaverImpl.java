@@ -11,6 +11,15 @@ import studying.withsolid.service.ReportSaver;
 
 public class ReportSaverImpl implements ReportSaver {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH-mm-ss");
+    private final Path reportsDirectory;
+
+    public ReportSaverImpl() {
+        this(Path.of("reports"));
+    }
+
+    public ReportSaverImpl(Path reportsDirectory) {
+        this.reportsDirectory = reportsDirectory;
+    }
 
     @Override
     public void save(Report report) {
@@ -21,7 +30,7 @@ public class ReportSaverImpl implements ReportSaver {
             );
         }
 
-        var reportForSave = Path.of("modules/practise-2/reports", "report-%s-%s.txt".formatted(
+        var reportForSave = reportsDirectory.resolve("report-%s-%s.txt".formatted(
                 report.date(),
                 report.time().format(DATE_TIME_FORMATTER)
         ));

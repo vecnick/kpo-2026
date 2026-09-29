@@ -1,14 +1,9 @@
 package studying;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@ToString
-@RequiredArgsConstructor
 public class HseCarFactory {
     private int carNumber = 0;
     private final List<Car> cars = new ArrayList<>();
@@ -22,9 +17,6 @@ public class HseCarFactory {
         cars.add(new Car(carNumber++, engineSize));
     }
 
-    /**
-     * Assigns available cars to waiting customers and liquidates unsold stock.
-     */
     public void saleCar() {
         customers.stream()
                 .filter(customer -> Objects.isNull(customer.getCar()))

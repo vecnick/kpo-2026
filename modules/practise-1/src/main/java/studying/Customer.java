@@ -1,19 +1,27 @@
 package studying;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-@ToString
 public class Customer {
-    @Getter
     private final String fullName;
-
-    @Getter
-    @Setter
     private Car car;
 
     public Customer(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car = car;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" + "fullName='" + fullName + '\'' + ", car=" + car + '}';
     }
 }

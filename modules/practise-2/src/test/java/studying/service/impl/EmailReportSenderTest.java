@@ -47,12 +47,7 @@ class EmailReportSenderTest {
     }
 
     private Report createReport() {
-        return Report.builder()
-                .title("Продажи")
-                .date(LocalDate.of(2026, 9, 11))
-                .time(LocalTime.NOON)
-                .carsSold(100)
-                .motorcyclesSold(50)
-                .build();
+        return new Report("Продажи", LocalDate.of(2026, 9, 11),
+                LocalTime.NOON, 100, 50);
     }
 }

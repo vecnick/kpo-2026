@@ -10,7 +10,6 @@ import studying.service.ReportService;
 import studying.service.impl.ReportSaverImpl;
 import studying.service.impl.ReportSenderImpl;
 
-/** Declares the object graph that Spring injects into the DI variant. */
 @Configuration(proxyBeanMethods = false)
 public final class ApplicationConfiguration {
     @Bean

@@ -9,11 +9,18 @@ import studying.exception.ApplicationException;
 import studying.model.Report;
 import studying.service.ReportSaver;
 
-/** Saves reports as text files. */
 public final class ReportSaverImpl implements ReportSaver {
-    /** Formats report times for file names. */
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HH-mm-ss");
+    private final Path reportsDirectory;
+
+    public ReportSaverImpl() {
+        this(Path.of("reports"));
+    }
+
+    public ReportSaverImpl(final Path reportsDirectory) {
+        this.reportsDirectory = reportsDirectory;
+    }
 
     @Override
     public void save(final Report report) {
@@ -24,7 +31,7 @@ public final class ReportSaverImpl implements ReportSaver {
             );
         }
 
-        var reportForSave = Path.of("modules/practise-2/reports",
+        var reportForSave = reportsDirectory.resolve(
                 "report-%s-%s.txt".formatted(
                 report.date(),
                 report.time().format(DATE_TIME_FORMATTER)
