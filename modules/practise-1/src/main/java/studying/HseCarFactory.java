@@ -4,43 +4,43 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @ToString
 @RequiredArgsConstructor
 public class HseCarFactory {
-    private int carNumber = 0;
-    private final List<Car> cars = new ArrayList<>();
-    private final List<Customer> customers = new ArrayList<>();
+    private int numberOfCar = 1;
+    private ArrayList<Car> cars = new ArrayList<Car>();
+    private ArrayList<Customer> customers = new ArrayList<Customer>();
 
-    public void addCustomer(Customer customer) {
-        customers.add(customer);
+    public boolean addCar(int pedSize) {
+        Car car = new Car(numberOfCar++, pedSize);
+        return cars.add(car);
     }
 
-    public void addCar(int engineSize) {
-        cars.add(new Car(carNumber++, engineSize));
-    }
-
-    /**
-     * Assigns available cars to waiting customers and liquidates unsold stock.
-     */
-    public void saleCar() {
-        customers.stream()
-                .filter(customer -> Objects.isNull(customer.getCar()))
-                .forEach(customer -> {
-                    if (!cars.isEmpty()) {
-                        customer.setCar(cars.removeFirst());
-                    }
-                });
-        cars.clear();
+    public boolean addCustomer(Customer customer) {
+        return customers.add(customer);
     }
 
     public void printCars() {
-        cars.forEach(System.out::println);
+        for (Car car : cars) {
+            System.out.println(car);
+        }
     }
 
     public void printCustomers() {
-        customers.forEach(System.out::println);
+        for (Customer customer : customers) {
+            System.out.println(customer);
+        }
     }
+
+    public void saleCar() {
+        for (Customer customer : customers) {
+            if (!cars.isEmpty() && customer.getCar() == null) {
+                customer.setCar(cars.get(0));
+                cars.remove(0);
+            }
+        }
+        cars.clear();
+    }
+
 }

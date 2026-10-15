@@ -4,16 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+@Getter
 @ToString
 public class Customer {
-    @Getter
-    private final String fullName;
+    private final String fio;
 
-    @Getter
     @Setter
     private Car car;
 
-    public Customer(String fullName) {
-        this.fullName = fullName;
+    public Customer(String fio) {
+        this.fio = fio;
     }
 }
