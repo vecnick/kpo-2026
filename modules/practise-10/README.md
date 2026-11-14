@@ -232,7 +232,7 @@ docker compose -f modules/practise-10/docker-compose.yml up --build
 curl http://localhost:8080/actuator/health
 ```
 
-Первый запуск скачивает Ollama и модель. Базовый HTTP-сценарий можно проверить скопированной [Postman-коллекцией](postman/practise-10.postman_collection.json): она проверяет биллинг, но ещё не проверяет Kafka и Telegram.
+Первый запуск скачивает Ollama и модель. Базовый HTTP-сценарий можно проверить скопированной [Postman-коллекцией](postman/practise-10.postman_collection.json): она проверяет биллинг, а запрос `05 — Create Telegram link code` предназначен для проверки endpoint после его реализации. Он использует сохранённый `apiKey` и записывает код, срок действия и команду `/link` в переменные `telegramLinkCode`, `telegramLinkCodeExpiresAt`, `telegramLinkCommand`. В стартовой копии практики 9 этот endpoint ещё отсутствует; до его реализации пропускайте запрос 05. Отправка команды боту выполняется вручную, Kafka и доставку Telegram-уведомлений коллекция не проверяет.
 
 ```bash
 ./gradlew :modules:practise-10:test

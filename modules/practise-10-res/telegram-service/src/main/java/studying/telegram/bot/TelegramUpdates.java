@@ -34,10 +34,24 @@ public class TelegramUpdates {
         UUID user = null;
         TelegramCommands.Binding binding = null;
         String response;
+        if (text.startsWith("sk-local-") || ("/link".equals(command) && prompt.startsWith("sk-local-"))) {
+            commands.complete(updateId, sender, chat, command,
+                    "Это API-ключ, а не код привязки. Не отправляйте его в Telegram. "
+                    + "Получите одноразовый код через POST /api/telegram/link-codes с API-ключом "
+                    + "в заголовке Authorization, затем отправьте /link <code>. "
+                    + "Если аккаунт уже привязан, просто задайте вопрос или выполните /balance.", null, null);
+            return;
+        }
         try {
             switch (command) {
-                case "/start", "/help" -> response = "Создайте код через POST /api/telegram/link-codes с API-ключом. "
-                        + "Отправьте /link <code> в течение пяти минут.\nЗадайте вопрос обычным текстом или /ask <вопрос>.\n/balance — баланс; /unlink — отключить.";
+                case "/start", "/help" -> {
+                    boolean linked = commands.binding(sender, chat) != null;
+                    response = (linked ? "Аккаунт уже привязан. "
+                            : "Создайте одноразовый код через POST /api/telegram/link-codes с API-ключом "
+                              + "в заголовке Authorization. Отправьте /link <code> в течение пяти минут. "
+                              + "Сам API-ключ в Telegram отправлять не нужно. ")
+                            + "Задайте вопрос обычным текстом или /ask <вопрос>.\n/balance — баланс; /unlink — отключить.";
+                }
                 case "/link" -> {
                     response = "Используйте /link <code>. API-ключ сюда отправлять не нужно.";
                     if (parts.length == 2) { user = gateway.redeem(updateId, sender, chat, parts[1].strip()); }

@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "55602f75-5d65-4da0-9177-71128eb3d389",
-    "name": "Practice 9 — AI Token Gateway",
-    "description": "Последовательная проверка регистрации, условного пополнения, API-ключа, реального usage Ollama, списаний, идемпотентности и ошибок. Запускайте всю коллекцию через Collection Runner в указанном порядке.",
+    "name": "Practice 10 — AI Gateway and Telegram",
+    "description": "Последовательная проверка регистрации, условного пополнения, API-ключа, реального usage Ollama, списаний, идемпотентности и ошибок. Запускайте всю коллекцию через Collection Runner в указанном порядке. После выпуска API-ключа запрос 05 создаёт одноразовый код привязки Telegram и сохраняет /link-команду в telegramLinkCommand. Выполните привязку вручную в личном чате с ботом.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "event": [
@@ -60,6 +60,18 @@
     },
     {
       "key": "emptyApiKey",
+      "value": ""
+    },
+    {
+      "key": "telegramLinkCode",
+      "value": ""
+    },
+    {
+      "key": "telegramLinkCodeExpiresAt",
+      "value": ""
+    },
+    {
+      "key": "telegramLinkCommand",
       "value": ""
     }
   ],
@@ -169,7 +181,58 @@
       ]
     },
     {
-      "name": "05 — Chat and charge real tokens",
+      "name": "05 — Create Telegram link code",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{apiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/telegram/link-codes",
+        "description": "Сначала выполните 04 — Issue API key. Скопируйте code из ответа и отправьте боту /link <code> в течение пяти минут. API-ключ в Telegram не отправляйте. Новый запрос отменяет предыдущий неиспользованный код. Команда также сохраняется в collection variable telegramLinkCommand."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "['telegramLinkCode', 'telegramLinkCodeExpiresAt', 'telegramLinkCommand'].forEach(key => pm.collectionVariables.set(key, ''));",
+              "if (!pm.collectionVariables.get('apiKey')) { throw new Error('Сначала выполните 04 — Issue API key'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) {",
+              "  const json = pm.response.json();",
+              "  pm.test('Link code is present and is not an API key', () => {",
+              "    pm.expect(json.code).to.be.a('string').and.not.empty;",
+              "    pm.expect(json.code.startsWith('sk-local-')).to.eql(false);",
+              "  });",
+              "  pm.test('Code expiry is a valid future timestamp', () => {",
+              "    pm.expect(json.expiresAt).to.be.a('string');",
+              "    pm.expect(Date.parse(json.expiresAt)).to.be.above(Date.now());",
+              "  });",
+              "  if (typeof json.code === 'string' && json.code && Number.isFinite(Date.parse(json.expiresAt))) {",
+              "    pm.collectionVariables.set('telegramLinkCode', json.code);",
+              "    pm.collectionVariables.set('telegramLinkCodeExpiresAt', json.expiresAt);",
+              "    pm.collectionVariables.set('telegramLinkCommand', '/link ' + json.code);",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — Chat and charge real tokens",
       "request": {
         "method": "POST",
         "header": [
@@ -213,7 +276,7 @@
       ]
     },
     {
-      "name": "06 — Repeat idempotent chat",
+      "name": "07 — Repeat idempotent chat",
       "request": {
         "method": "POST",
         "header": [
@@ -252,7 +315,7 @@
       ]
     },
     {
-      "name": "07 — Wallet after charge",
+      "name": "08 — Wallet after charge",
       "request": {
         "method": "GET",
         "header": [],
@@ -274,7 +337,7 @@
       ]
     },
     {
-      "name": "08 — Wallet transactions",
+      "name": "09 — Wallet transactions",
       "request": {
         "method": "GET",
         "header": [],
@@ -299,7 +362,7 @@
       ]
     },
     {
-      "name": "09 — Register user without credits",
+      "name": "10 — Register user without credits",
       "request": {
         "method": "POST",
         "header": [
@@ -328,7 +391,7 @@
       ]
     },
     {
-      "name": "10 — Issue key without credits",
+      "name": "11 — Issue key without credits",
       "request": {
         "method": "POST",
         "header": [],
@@ -348,7 +411,7 @@
       ]
     },
     {
-      "name": "11 — Reject chat without credits",
+      "name": "12 — Reject chat without credits",
       "request": {
         "method": "POST",
         "header": [
@@ -385,7 +448,7 @@
       ]
     },
     {
-      "name": "12 — Reject invalid API key",
+      "name": "13 — Reject invalid API key",
       "request": {
         "method": "POST",
         "header": [

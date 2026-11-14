@@ -339,6 +339,28 @@ class DeliveryIntegrationTest {
         updates.handle(update(updateId + 2, 1601, "/unlink"));
     }
 
+    @Test
+    void apiKeyIsNotMistakenForLinkCodeOrSentToTheModel() {
+        updates.handle(update(updateId, 1701, "/link " + apiKey));
+        updates.handle(update(updateId + 1, 1701, apiKey));
+        assertThat(gatewayDb.queryForObject("SELECT count(*) FROM ai_requests WHERE user_id=?", Long.class, user)).isZero();
+        assertThat(gatewayDb.queryForObject("SELECT count(*) FROM telegram_link_redemptions WHERE user_id=?", Long.class, user)).isZero();
+        assertThat(telegramDb.queryForObject("SELECT payload->>'text' FROM telegram_notifications WHERE update_id=?",
+                String.class, updateId)).contains("Это API-ключ, а не код привязки").doesNotContain(apiKey);
+        updates.handle(update(updateId + 2, 1701, "/link " + code()));
+        updates.handle(update(updateId + 3, 1701, "/start"));
+        assertThat(telegramDb.queryForObject("SELECT payload->>'text' FROM telegram_notifications WHERE update_id=?",
+                String.class, updateId + 3)).contains("Аккаунт уже привязан");
+    }
+
+    @Test
+    void unknownEndpointsReturn404InsteadOfInternalError() {
+        assertThatThrownBy(() -> http.get().uri("/products/tea").retrieve().body(String.class))
+                .isInstanceOf(HttpClientErrorException.NotFound.class);
+        assertThatThrownBy(() -> http.post().uri("/graphql").body(Map.of("query", "{ __typename }"))
+                .retrieve().body(String.class)).isInstanceOf(HttpClientErrorException.NotFound.class);
+    }
+
     private String code() {
         return json.readTree(http.post().uri("/api/telegram/link-codes").header("Authorization", "Bearer " + apiKey)
                 .retrieve().body(String.class)).path("code").asText();

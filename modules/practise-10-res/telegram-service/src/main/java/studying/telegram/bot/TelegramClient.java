@@ -15,7 +15,7 @@ public class TelegramClient {
     private final TelegramProperties properties;
     private final JsonMapper json;
     private final HttpClient http = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(3)).build();
+            .connectTimeout(Duration.ofSeconds(10)).build();
 
     public TelegramClient(TelegramProperties properties, JsonMapper json) {
         this.properties = properties;
@@ -24,11 +24,11 @@ public class TelegramClient {
 
     public JsonNode updates(long offset) {
         return call("getUpdates", Map.of("offset", offset, "timeout", 20,
-                "allowed_updates", new String[]{"message"}), Duration.ofSeconds(25));
+                "allowed_updates", new String[]{"message"}), Duration.ofSeconds(35));
     }
 
     public void send(long chatId, String text) {
-        call("sendMessage", Map.of("chat_id", chatId, "text", text), Duration.ofSeconds(10));
+        call("sendMessage", Map.of("chat_id", chatId, "text", text), Duration.ofSeconds(15));
     }
 
     private JsonNode call(String method, Object body, Duration timeout) {
@@ -55,8 +55,24 @@ public class TelegramClient {
             throw new Failure(false, 0, "TELEGRAM_INTERRUPTED");
         } catch (Exception exception) {
             // Never propagate the request URI or the raw response: the URI contains a secret.
-            throw new Failure(false, 0, "TELEGRAM_NETWORK_ERROR");
+            throw new Failure(false, 0, safeFailureCode(exception));
         }
+    }
+
+    static String safeFailureCode(Exception exception) {
+        boolean connectionFailed = false;
+        for (Throwable cause = exception; cause != null; cause = cause.getCause()) {
+            if (cause instanceof java.net.http.HttpConnectTimeoutException) { return "TELEGRAM_CONNECT_TIMEOUT"; }
+            if (cause instanceof java.net.http.HttpTimeoutException) { return "TELEGRAM_REQUEST_TIMEOUT"; }
+            if (cause instanceof java.net.UnknownHostException || cause instanceof java.nio.channels.UnresolvedAddressException) {
+                return "TELEGRAM_DNS_ERROR";
+            }
+            if (cause instanceof javax.net.ssl.SSLException) { return "TELEGRAM_TLS_ERROR"; }
+            if (cause instanceof java.net.ConnectException) { connectionFailed = true; }
+        }
+        if (connectionFailed) { return "TELEGRAM_CONNECTION_FAILED"; }
+        if (exception instanceof tools.jackson.core.JacksonException) { return "TELEGRAM_INVALID_RESPONSE"; }
+        return "TELEGRAM_NETWORK_ERROR";
     }
 
     public static class Failure extends RuntimeException {

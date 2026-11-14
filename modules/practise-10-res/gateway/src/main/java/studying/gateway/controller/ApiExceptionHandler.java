@@ -32,6 +32,14 @@ public class ApiExceptionHandler {
                 "INVALID_REQUEST", "Некорректный запрос", UUID.randomUUID().toString()));
     }
 
+    @ExceptionHandler({org.springframework.web.servlet.resource.NoResourceFoundException.class,
+            org.springframework.web.servlet.NoHandlerFoundException.class})
+    public ResponseEntity<ErrorResponse> handleNotFound(Exception exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(
+                "ENDPOINT_NOT_FOUND", "Такого endpoint нет. Проверьте адрес и коллекцию API",
+                UUID.randomUUID().toString()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception exception) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
