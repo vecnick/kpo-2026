@@ -10,13 +10,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CourseTest {
+    private static final BigDecimal EXAM_MAXIMUM = new BigDecimal("10");
+    private static final BigDecimal SCORE_STEP = new BigDecimal("0.01");
+
     private final Course course = new Course();
     private final WeightedResultService results = new WeightedResultService();
 
     @BeforeEach
     void setUp() {
         course.addStudent(new Student("s1", "Анна"));
-        course.addCriterion(new Criterion("exam", "Экзамен", number("10"), number("3")));
+        course.addCriterion(new Criterion("exam", "Экзамен", EXAM_MAXIMUM, number("3")));
         course.addCriterion(new Criterion("lab", "Практика", number("20"), number("1")));
     }
 
@@ -24,8 +27,9 @@ class CourseTest {
     void rejectsInvalidEvaluationWithoutReplacingPreviousScore() {
         course.grade("s1", "exam", score("7"));
 
-        assertThrows(IllegalArgumentException.class, () -> course.grade("s1", "exam", score("10.01")));
-        assertThrows(IllegalArgumentException.class, () -> course.grade("s1", "exam", score("-1")));
+        Score aboveMaximum = new Score(EXAM_MAXIMUM.add(SCORE_STEP));
+        assertThrows(IllegalArgumentException.class, () -> course.grade("s1", "exam", aboveMaximum));
+        assertThrows(IllegalArgumentException.class, () -> new Score(SCORE_STEP.negate()));
         assertThrows(IllegalArgumentException.class, () -> course.grade("s1", "unknown", score("1")));
         assertThrows(IllegalArgumentException.class, () -> course.grade("unknown", "exam", score("1")));
         assertEquals(1, course.evaluations("s1").size());
@@ -52,7 +56,7 @@ class CourseTest {
 
         course.grade("s1", "lab", score("10"));
         assertEquals(number("72.50"), result(ScorePolicy.FINAL));
-        course.grade("s1", "exam", score("10"));
+        course.grade("s1", "exam", new Score(EXAM_MAXIMUM));
         assertEquals(number("87.50"), result(ScorePolicy.FINAL));
 
         course.cancelEvaluation("s1", "lab");

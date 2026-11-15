@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class WeightedResultService {
+    private static final BigDecimal PERCENT_MULTIPLIER = BigDecimal.valueOf(100);
+    private static final int PERCENT_SCALE = 2;
+
     public Optional<BigDecimal> calculate(Course course, String studentId, ScorePolicy policy) {
         Map<String, Evaluation> evaluations = new HashMap<>();
         for (Evaluation evaluation : course.evaluations(studentId)) {
@@ -33,7 +36,7 @@ public final class WeightedResultService {
         if (totalWeight.signum() == 0) {
             return Optional.empty();
         }
-        return Optional.of(numerator.movePointRight(2)
-                .divide(denominator.multiply(totalWeight), 2, RoundingMode.HALF_UP));
+        return Optional.of(numerator.multiply(PERCENT_MULTIPLIER)
+                .divide(denominator.multiply(totalWeight), PERCENT_SCALE, RoundingMode.HALF_UP));
     }
 }
