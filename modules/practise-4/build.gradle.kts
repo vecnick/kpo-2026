@@ -13,7 +13,7 @@ java {
 }
 
 application {
-    mainClass = "studying.ioc.di.Main"
+    mainClass = "studying.Main"
 }
 
 dependencies {
