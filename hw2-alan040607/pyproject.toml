@@ -1,0 +1,7 @@
+[project]
+name = "pos-gradebook"
+version = "1.0.0"
+description = "Преподавательская оценка студентов: DDD, Ports and Adapters, GoF"
+requires-python = ">=3.11"
+dependencies = []
+

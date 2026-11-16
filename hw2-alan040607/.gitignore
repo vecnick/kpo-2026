@@ -1,0 +1,14 @@
+# Кеш Python
+__pycache__/
+*.py[cod]
+
+# Виртуальное окружение
+.venv/
+
+# Локальные настройки PyCharm
+.idea/
+pythonProject/
+
+# Рабочие данные и результаты экспорта
+data/
+output/
